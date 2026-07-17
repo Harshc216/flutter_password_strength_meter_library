@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'password_strength_level.dart';
+import 'password_requirements_checklist.dart';
+import 'password_strength_indicator.dart';
 
 class PasswordStrengthField extends StatefulWidget {
   /// Controller for text input field.
@@ -332,143 +334,6 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
     return null;
   }
 
-  Widget _buildStrengthIndicator() {
-    if (!widget.showStrengthMeter || _controller.text.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final level = _strengthLevel;
-    final levelColor = level.color;
-    final levelText = level.label;
-    final filledCount = level.filledSegments;
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, left: 2.0, right: 2.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: List.generate(4, (index) {
-              final isFilled = index < filledCount;
-              final color = isFilled ? levelColor : const Color(0xFFE2E8F0);
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: index == 0 ? 0.0 : 4.0,
-                    right: index == 3 ? 0.0 : 4.0,
-                  ),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: 5.0,
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                levelText,
-                style: TextStyle(
-                  color: levelColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13.0,
-                ),
-              ),
-              const Icon(
-                Icons.info_outline_rounded,
-                size: 16.0,
-                color: Color(0xFF94A3B8),
-              ),
-            ],
-          ),
-          if (widget.showChecklist) ...[
-            const SizedBox(height: 12.0),
-            _buildChecklist(),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChecklist() {
-    final list = <Widget>[];
-
-    list.add(_buildChecklistItem(
-      'At least ${widget.minPasswordLength} characters',
-      _hasMinLength,
-    ));
-    if (widget.requireUppercase) {
-      list.add(_buildChecklistItem(
-        'At least one uppercase letter',
-        _hasUppercase,
-      ));
-    }
-    if (widget.requireLowercase) {
-      list.add(_buildChecklistItem(
-        'At least one lowercase letter',
-        _hasLowercase,
-      ));
-    }
-    if (widget.requireNumber) {
-      list.add(_buildChecklistItem(
-        'At least one number',
-        _hasNumber,
-      ));
-    }
-    if (widget.requireSpecialChar) {
-      list.add(_buildChecklistItem(
-        'At least one special character (!@#\$&*~._-)',
-        _hasSpecialChar,
-      ));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: list,
-    );
-  }
-
-  Widget _buildChecklistItem(String text, bool isMet) {
-    final color = isMet ? Colors.green : Colors.grey.shade400;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3.0),
-      child: Row(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            padding: const EdgeInsets.all(2.0),
-            decoration: BoxDecoration(
-              color: isMet ? const Color(0x1A4CAF50) : Colors.transparent,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isMet ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-              color: color,
-              size: 16.0,
-            ),
-          ),
-          const SizedBox(width: 8.0),
-          AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(
-              color: isMet ? Colors.green.shade700 : Colors.grey.shade600,
-              fontSize: 12.0,
-              fontWeight: isMet ? FontWeight.w500 : FontWeight.normal,
-            ),
-            child: Text(text),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final activeColor = _strengthLevel.color;
@@ -509,7 +374,25 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
           decoration: _buildDecoration(activeColor),
           validator: _defaultValidator,
         ),
-        _buildStrengthIndicator(),
+        PasswordStrengthIndicator(
+          strengthLevel: _strengthLevel,
+          isPasswordEmpty: _controller.text.isEmpty,
+          showStrengthMeter: widget.showStrengthMeter,
+          checklist: widget.showChecklist
+              ? PasswordRequirementsChecklist(
+                  minPasswordLength: widget.minPasswordLength,
+                  requireUppercase: widget.requireUppercase,
+                  requireLowercase: widget.requireLowercase,
+                  requireNumber: widget.requireNumber,
+                  requireSpecialChar: widget.requireSpecialChar,
+                  hasMinLength: _hasMinLength,
+                  hasUppercase: _hasUppercase,
+                  hasLowercase: _hasLowercase,
+                  hasNumber: _hasNumber,
+                  hasSpecialChar: _hasSpecialChar,
+                )
+              : null,
+        ),
       ],
     );
   }
