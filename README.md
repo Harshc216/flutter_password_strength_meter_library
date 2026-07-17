@@ -46,11 +46,19 @@ To use this library in your Flutter project, add it to your `pubspec.yaml` depen
 dependencies:
   flutter:
     sdk: flutter
-  flutter_password_strength_meter_library:
-    path: E:/Flutter_Codes/libraries/password_strength_meter/flutter_password_strength_meter_library
+  # From pub.dev
+  flutter_password_strength_meter_library: ^0.0.1
 ```
 
-*Note: Update the relative path where your library is located.*
+Or reference it directly from a Git repository:
+
+```yaml
+dependencies:
+  flutter_password_strength_meter_library:
+    git:
+      url: https://github.com/your_username/flutter_password_strength_meter.git
+      ref: main
+```
 
 ---
 
