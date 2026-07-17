@@ -99,6 +99,11 @@ class PasswordStrengthField extends StatefulWidget {
   /// Require at least one special character in password.
   final bool requireSpecialChar;
 
+  /// Whether to enable default validation against the password strength requirements.
+  /// If true, the field will automatically validate that the password meets all
+  /// specified requirements. If false, validation will only run if a custom [validator] is provided.
+  final bool enableDefaultValidation;
+
   const PasswordStrengthField({
     super.key,
     this.controller,
@@ -133,6 +138,7 @@ class PasswordStrengthField extends StatefulWidget {
     this.requireLowercase = true,
     this.requireNumber = true,
     this.requireSpecialChar = true,
+    this.enableDefaultValidation = false,
   });
 
   @override
@@ -298,6 +304,9 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
     if (widget.validator != null) {
       return widget.validator!(value);
     }
+    if (!widget.enableDefaultValidation) {
+      return null;
+    }
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
@@ -324,7 +333,7 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
   }
 
   Widget _buildStrengthIndicator() {
-    if (!widget.showStrengthMeter) {
+    if (!widget.showStrengthMeter || _controller.text.isEmpty) {
       return const SizedBox.shrink();
     }
 

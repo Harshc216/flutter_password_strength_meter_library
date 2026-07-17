@@ -34,11 +34,9 @@ class DemoScreen extends StatefulWidget {
 }
 
 class _DemoScreenState extends State<DemoScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   final _passwordController1 = TextEditingController();
   final _passwordController2 = TextEditingController();
-  final _passwordController3 = TextEditingController(text: 'fd4');
+  final _passwordController3 = TextEditingController();
 
   @override
   void dispose() {
@@ -46,44 +44,6 @@ class _DemoScreenState extends State<DemoScreen> {
     _passwordController2.dispose();
     _passwordController3.dispose();
     super.dispose();
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8.0),
-              Text('All passwords met requirement criteria!'),
-            ],
-          ),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.error, color: Colors.white),
-              SizedBox(width: 8.0),
-              Text('Please resolve weak passwords before submission.'),
-            ],
-          ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-      );
-    }
   }
 
   @override
@@ -103,111 +63,82 @@ class _DemoScreenState extends State<DemoScreen> {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: const BoxDecoration(
+                          color: Color(0x1A6366F1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.security_rounded,
+                          size: 48.0,
+                          color: Color(0xFF6366F1),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      const Text(
+                        'Password Strength Meter',
+                        style: TextStyle(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32.0),
+                Card(
+                  elevation: 4.0,
+                  shadowColor: const Color(0x1A000000),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: const BoxDecoration(
-                            color: Color(0x1A6366F1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.security_rounded,
-                            size: 48.0,
-                            color: Color(0xFF6366F1),
-                          ),
+                        PasswordStrengthField(
+                          controller: _passwordController1,
+                          labelText: 'Basic Password Field',
+                          hintText: 'Enter password',
+                          borderRadius: 16.0,
+                          fillColor: const Color(0xFFF8FAFC),
                         ),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          'Password Strength Field',
-                          style: TextStyle(
-                            fontSize: 28.0,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
-                          ),
+                        const SizedBox(height: 28.0),
+                        PasswordStrengthField(
+                          controller: _passwordController2,
+                          labelText: 'Password with Requirements Checklist',
+                          hintText: 'Enter password (shows list below)',
+                          borderRadius: 16.0,
+                          showChecklist: true,
+                          fillColor: const Color(0xFFF8FAFC),
                         ),
-                        const SizedBox(height: 8.0),
-                        const Text(
-                          'A premium real-time strength validation widget',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Color(0xFF64748B),
-                          ),
+                        const SizedBox(height: 28.0),
+                        PasswordStrengthField(
+                          controller: _passwordController3,
+                          labelText: 'Custom Requirements (Min 6, No Special Char/Uppercase)',
+                          hintText: 'Enter password',
+                          borderRadius: 16.0,
+                          minPasswordLength: 6,
+                          requireUppercase: false,
+                          requireSpecialChar: false,
+                          showChecklist: true,
+                          fillColor: const Color(0xFFF8FAFC),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32.0),
-                  Card(
-                    elevation: 4.0,
-                    shadowColor: const Color(0x1A000000),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          PasswordStrengthField(
-                            controller: _passwordController1,
-                            labelText: 'New Password',
-                            hintText: 'New Password',
-                            borderRadius: 16.0,
-                            fillColor: const Color(0xFFF8FAFC),
-                          ),
-                          const SizedBox(height: 28.0),
-                          PasswordStrengthField(
-                            controller: _passwordController2,
-                            labelText: 'New Password',
-                            hintText: 'New Password',
-                            borderRadius: 16.0,
-                            obscureText: false, // Show toggle visible state
-                            fillColor: const Color(0xFFF8FAFC),
-                          ),
-                          const SizedBox(height: 28.0),
-                          PasswordStrengthField(
-                            controller: _passwordController3,
-                            labelText: 'New Password',
-                            hintText: 'New Password',
-                            borderRadius: 16.0,
-                            fillColor: const Color(0xFFF8FAFC),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32.0),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6366F1),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      elevation: 4.0,
-                      shadowColor: const Color(0x666366F1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'Verify & Submit Form',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
